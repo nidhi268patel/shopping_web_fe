@@ -1,0 +1,8 @@
+.header-inner { display:flex; align-items:center; justify-content:space-between; }
+.brand a { font-weight: 800; color: white; text-decoration: none; font-size:1.15rem; }
+.brand .logo-accent { color: #fb641b; font-weight: 900; margin-left:4px; }
+.nav a { margin-left: 12px; color: white; text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+.search-input { min-width: 360px; }
+
+.top-strip { background: darken($primary, 7%); text-align: center; }

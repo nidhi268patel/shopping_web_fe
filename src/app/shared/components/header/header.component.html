@@ -1,0 +1,29 @@
+
+<div class="top-strip small py-1">Great offers — Free delivery over {{50 | currency:'INR'}}</div>
+
+<div class="container">
+  <div class="d-flex align-items-center justify-content-between header-inner">
+
+    <!-- Left: Logo -->
+    <div class="d-flex align-items-center">
+      <a class="brand me-3" routerLink="/">Shoply<span class="logo-accent">.</span></a>
+    </div>
+
+    <!-- Center: Search -->
+    <div class="flex-fill mx-3">
+      <div class="input-group search-group">
+        <input class="form-control search-input" placeholder="Search for products, brands and more" aria-label="Search">
+        <button class="btn search-btn btn-primary" type="button">Search</button>
+      </div>
+    </div>
+
+    <!-- Right: links -->
+    <div class="d-flex align-items-center gap-3">
+      <a class="link-muted" href="#">Login &nbsp; &nbsp;</a>
+      <a class="link-muted"  href="/">More &nbsp; &nbsp;</a>
+      <a class="cart-btn" routerLink="/cart">🛒Cart ({{ cartCount }}) &nbsp; &nbsp;</a>
+      <a class="link-muted" href="/checkout">Checkout</a>
+    </div>
+
+  </div>
+</div>

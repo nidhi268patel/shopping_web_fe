@@ -1,0 +1,12 @@
+<div class="header">
+    <div class="container">
+        <app-header></app-header>
+    </div>
+</div>
+<div *ngIf="product" class="card product-detail-card">
+  <img [src]="product.imageBase64 || 'https://via.placeholder.com/300x200'" 
+                 [alt]="product.name" class="product-img">
+  <h2>{{ product.productName }}</h2>
+  <p>{{ product.productDescription }}</p>
+  <p><strong>{{ product.sellingPrice | currency:'INR':'symbol':'1.0-0' }}</strong></p>
+</div>

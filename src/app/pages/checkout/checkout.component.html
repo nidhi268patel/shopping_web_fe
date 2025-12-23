@@ -1,0 +1,11 @@
+<div class="header">
+    <div class="container">
+        <app-header></app-header>
+    </div>
+</div>
+<h2>Checkout</h2>
+<div *ngIf="items.length; else empty">
+  <p>Total: {{ total | currency:'INR':'symbol':'1.0-0' }}</p>
+  <p>Place order (demo): <button class="btn btn-primary" (click)="place()">Place Order</button></p>
+</div>
+<ng-template #empty><p>Your cart is empty.</p></ng-template>

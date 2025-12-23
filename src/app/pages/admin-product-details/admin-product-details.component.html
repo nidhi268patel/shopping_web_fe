@@ -1,0 +1,282 @@
+<div class="admin-table-container">
+    <!-- Header with Add Button -->
+    <div class="table-header">
+        <div class="header-left">
+            <h2>🛒 Products Management</h2>
+            <span class="product-count">{{ filteredProducts.length }} products</span>
+        </div>
+        <div class="header-controls">
+            <button class="add-btn" (click)="openAddModal()">
+                ➕ Add New Product
+            </button>
+            <input [(ngModel)]="searchTerm" (input)="filterProducts()" placeholder="🔍 Search products..."
+                class="search-input">
+            <select [(ngModel)]="selectedCategory" (change)="filterProducts()" class="category-filter">
+                <option value="">All Categories</option>
+                <option value="Mobile">Mobile</option>
+                <option value="Laptop">Laptop</option>
+                <option value="Footwear">Footwear</option>
+                <option value="Electronics">Electronics</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading products...</p>
+    </div>
+
+    <!-- VIEW ONLY Table -->
+    <div class="table-scroll-container">
+        <table class="products-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Product Details</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Category</th>
+                    <th>Discount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let product of filteredProducts; trackBy: trackByProductId">
+                    <!-- Image -->
+                    <td class="image-cell">
+                        <img [src]="product.imageBase64" [alt]="product.productName" class="table-image">
+                    </td>
+
+                    <!-- Product Details (VIEW ONLY) -->
+                    <td class="product-cell">
+                        <div class="name-section">
+                            <div class="product-name">{{ product.productName }}</div>
+                        </div>
+                        <div class="desc-section">
+                            <div class="product-desc">
+                                {{ product.productDescription | slice:0:60 }}{{ product.productDescription.length > 60 ?
+                                '...' : '' }}
+                            </div>
+                        </div>
+                    </td>
+
+                    <!-- Price (VIEW ONLY) -->
+                    <td class="price-cell">
+                        <div class="price-display">
+                            <div class="mrp">₹{{ product.mrpPrice | number:'1.0-0' }}</div>
+                            <div class="selling-price">₹{{ product.sellingPrice | number:'1.0-0' }}</div>
+                        </div>
+                    </td>
+
+                    <!-- Stock (VIEW ONLY) -->
+                    <td class="stock-cell">
+                        <span [class]="getStockClass(product.availableStock)">
+                            {{ product.availableStock }}
+                        </span>
+                    </td>
+
+                    <!-- Category (VIEW ONLY) -->
+                    <td class="category-cell">
+                        <span class="category-badge">{{ product.productCategory }}</span>
+                    </td>
+
+                    <!-- Discount (VIEW ONLY) -->
+                    <td class="discount-cell">
+                        <span class="discount-badge">{{ product.discountPercent | number:'1.1-1' }}%</span>
+                    </td>
+
+                    <!-- Actions (Open Modal) -->
+                    <td class="actions-cell">
+                        <button class="btn-edit" (click)="openEditModal(product)" title="Edit">
+                            ✏️
+                        </button>
+                        <button class="btn-delete" (click)="deleteProduct(product.productId!)" title="Delete">
+                            🗑️
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Empty State -->
+        <div *ngIf="!loading && filteredProducts.length === 0" class="empty-state">
+            <div class="empty-icon">📦</div>
+            <h3>No Products Found</h3>
+            <p>Click "Add New Product" to get started or adjust your search</p>
+        </div>
+    </div>
+
+    <!-- ADD MODAL -->
+    <div *ngIf="showAddModal" class="modal-overlay" (click)="closeModals()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>➕ Add New Product</h3>
+                <button class="close-btn" (click)="closeModals()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Add This Inside Both Add and Edit Modals (Replace your current form inputs) -->
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="productName">Product Name *</label>
+                        <input id="productName" [(ngModel)]="formData.productName" placeholder="Product Name"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <select id="productCategory" [(ngModel)]="formData.productCategory" class="edit-select">
+                            <option value="Mobile">Mobile</option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="Footwear">Footwear</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Electronics">Others</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sellingPrice">Selling Price *</label>
+                        <input id="sellingPrice" type="number" [(ngModel)]="formData.sellingPrice"
+                            placeholder="Selling Price" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mrpPrice">MRP Price *</label>
+                        <input id="mrpPrice" type="number" [(ngModel)]="formData.mrpPrice" placeholder="MRP Price"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discountPercent">Discount %</label>
+                        <input id="discountPercent" type="number" [(ngModel)]="formData.discountPercent"
+                            placeholder="Discount Percentage" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="availableStock">Available Stock</label>
+                        <input id="availableStock" type="number" [(ngModel)]="formData.availableStock"
+                            placeholder="Stock" />
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="productDescription">Product Description</label>
+                        <textarea id="productDescription" [(ngModel)]="formData.productDescription"
+                            placeholder="Description"></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="productImage">Product Image</label>
+                        <label class="file-label" for="productImageInput">
+                            📷 Choose Product Image
+                        </label>
+                        <input id="productImageInput" type="file" (change)="onFileSelect($event)" accept="image/*"
+                            class="file-input" />
+
+                        <div *ngIf="previewImage" class="image-preview">
+                            <img [src]="previewImage" alt="Product Image Preview" />
+                            <button type="button" (click)="clearImage()" class="clear-image-btn">Remove</button>
+                        </div>
+
+                        <small *ngIf="!previewImage && selectedProduct?.imageBase64">
+                            Current image will remain unchanged if you don’t select a new image.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-cancel" (click)="closeModals()">Cancel</button>
+                    <button class="btn-save" (click)="saveProduct()"
+                        [disabled]="!formData.productName || !formData.sellingPrice">
+                        Create Product
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div *ngIf="showEditModal" class="modal-overlay" (click)="closeModals()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <div class="modal-header">
+                <h3>✏️ Edit Product</h3>
+                <button class="close-btn" (click)="closeModals()">×</button>
+            </div>
+            <div class="modal-body">
+                <!-- Add This Inside Both Add and Edit Modals (Replace your current form inputs) -->
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="productName">Product Name *</label>
+                        <input id="productName" [(ngModel)]="formData.productName" placeholder="Product Name"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="productCategory">Category</label>
+                        <select id="productCategory" [(ngModel)]="formData.productCategory" class="edit-select">
+                            <option value="Mobile">Mobile</option>
+                            <option value="Laptop">Laptop</option>
+                            <option value="Footwear">Footwear</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Electronics">Others</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sellingPrice">Selling Price *</label>
+                        <input id="sellingPrice" type="number" [(ngModel)]="formData.sellingPrice" (input)="updateDiscount()"
+                            placeholder="Selling Price" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mrpPrice">MRP Price *</label>
+                        <input id="mrpPrice" type="number" [(ngModel)]="formData.mrpPrice" placeholder="MRP Price" (input)="updateDiscount()"
+                            required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discountPercent">Discount %</label>
+                        <input id="discountPercent" type="number" [(ngModel)]="formData.discountPercent" disabled
+                            placeholder="Discount Percentage" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="availableStock">Available Stock</label>
+                        <input id="availableStock" type="number" [(ngModel)]="formData.availableStock"
+                            placeholder="Stock" />
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="productDescription">Product Description</label>
+                        <textarea id="productDescription" [(ngModel)]="formData.productDescription"
+                            placeholder="Description"></textarea>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="productImage">Product Image</label>
+                        <label class="file-label" for="productImageInput">
+                            📷 Choose Product Image
+                        </label>
+                        <input id="productImageInput" type="file" (change)="onFileSelect($event)" accept="image/*"
+                            class="file-input" />
+
+                        <div *ngIf="previewImage" class="image-preview">
+                            <img [src]="previewImage" alt="Product Image Preview" />
+                            <button type="button" (click)="clearImage()" class="clear-image-btn">Remove</button>
+                        </div>
+
+                        <small *ngIf="!previewImage && selectedProduct?.imageBase64">
+                            Current image will remain unchanged if you don’t select a new image.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-cancel" (click)="closeModals()">Cancel</button>
+                    <button class="btn-save" (click)="saveProduct()">Update Product</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
