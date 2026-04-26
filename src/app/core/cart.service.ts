@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-export interface CartItem { id: number; name: string; price: number; quantity: number; }
+export interface CartItem { id: number; name: string; price: number; mrpPrice: number; quantity: number; imageBase64?: string; stock?: number; } 
 
 @Injectable({ providedIn: 'root' })
 export class CartService {

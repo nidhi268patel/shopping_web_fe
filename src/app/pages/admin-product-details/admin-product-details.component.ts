@@ -1,14 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { categories } from 'src/app/core/constant';
 import { Product } from 'src/app/core/product.service';
+
 
 @Component({
   selector: 'admin-product-details',
   templateUrl: './admin-product-details.component.html',
   styleUrls: ['./admin-product-details.component.css']
 })
-export class AdminProductDetailsComponent implements OnInit {
 
+export class AdminProductDetailsComponent implements OnInit {
+readonly categories:string[] = categories
  products: Product[] = [];
   filteredProducts: Product[] = [];
   searchTerm = '';
@@ -182,3 +185,4 @@ clearImage() {
   }
 
 }
+

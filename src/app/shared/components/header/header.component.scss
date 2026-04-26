@@ -1,8 +1,490 @@
-.header-inner { display:flex; align-items:center; justify-content:space-between; }
-.brand a { font-weight: 800; color: white; text-decoration: none; font-size:1.15rem; }
-.brand .logo-accent { color: #fb641b; font-weight: 900; margin-left:4px; }
-.nav a { margin-left: 12px; color: white; text-decoration: none; }
-.nav a:hover { text-decoration: underline; }
-.search-input { min-width: 360px; }
+// Colors
+$primary: #2874f0;
+$accent: #ff9f00;
+$text-dark: #212121;
+$text-light: #878787;
+$border-light: #e0e0e0;
+$bg-light: #fafafa;
 
-.top-strip { background: darken($primary, 7%); text-align: center; }
+// Header Wrapper
+.header-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+// Main Header
+.header-main {
+  padding: 12px 0;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+// Header Left (Logo + Search)
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+.logo-link {
+  font-size: 28px;
+  font-weight: 800;
+  color: $primary;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  letter-spacing: -0.5px;
+  white-space: nowrap;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    color: darken($primary, 5%);
+    transform: scale(1.02);
+  }
+}
+
+.logo-accent {
+  color: $accent;
+  font-size: 32px;
+  font-weight: 900;
+  margin-left: 2px;
+}
+
+// Search Container
+.search-container {
+  flex: 1;
+  min-width: 240px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border: 1px solid $border-light;
+  border-radius: 4px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    border-color: $primary;
+    box-shadow: 0 0 0 2px rgba(40, 116, 240, 0.1);
+    background: white;
+  }
+}
+
+.search-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: $text-dark;
+  outline: none;
+
+  &::placeholder {
+    color: $text-light;
+  }
+}
+
+.search-btn {
+  background: $primary;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.3s ease;
+  white-space: nowrap;
+
+  &:hover {
+    background: darken($primary, 5%);
+  }
+}
+
+// Header Right (User Actions)
+.header-right {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.nav-action {
+  position: relative;
+}
+
+.action-link {
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  color: $text-dark;
+  font-size: 12px;
+  position: relative;
+
+  &:hover {
+    color: $primary;
+  }
+
+  .icon {
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.action-label {
+  text-align: left;
+  display: none;
+  @media (min-width: 768px) {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+}
+
+.label-top {
+  font-size: 11px;
+  color: $text-light;
+  font-weight: 400;
+}
+
+.label-bottom {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-dark;
+}
+
+// Account Menu Toggle
+.account-menu-toggle {
+  position: relative;
+
+  &:hover {
+    background: rgba($primary, 0.05);
+    border-radius: 4px;
+  }
+
+  .dropdown-arrow {
+    font-size: 10px;
+    margin-left: 4px;
+    transition: transform 0.3s ease;
+    color: $text-light;
+
+    &.open {
+      transform: rotate(180deg);
+      color: $primary;
+    }
+  }
+}
+
+// Account Dropdown Menu
+.account-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: white;
+  border: 1px solid $border-light;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 280px;
+  z-index: 2000;
+  animation: slideDownMenu 0.2s ease-out;
+  overflow: hidden;
+}
+
+.dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, $primary 0%, darken($primary, 10%) 100%);
+  color: white;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(white, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-email {
+  font-size: 12px;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: $border-light;
+}
+
+.dropdown-items {
+  padding: 8px 0;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: $text-dark;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  font-size: 14px;
+
+  &:hover {
+    background: $bg-light;
+    color: $primary;
+    padding-left: 20px;
+  }
+
+  .item-icon {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+  }
+
+  .item-text {
+    flex: 1;
+  }
+}
+
+.logout-btn {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #e74c3c;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  border-top: 1px solid $border-light;
+
+  &:hover {
+    background: rgba(#e74c3c, 0.05);
+  }
+
+  .logout-icon {
+    font-size: 16px;
+  }
+
+  .logout-text {
+    flex: 1;
+  }
+}
+
+.login-btn {
+  &:hover {
+    color: $primary;
+    background: rgba($primary, 0.05);
+    border-radius: 4px;
+  }
+}
+
+// Cart Badge
+.cart-action .badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: $accent;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.cart-link {
+  &:hover {
+    color: $primary;
+  }
+}
+
+// Promo Section
+.promo-section {
+  text-align: center;
+  padding: 8px 0;
+  border-top: 1px solid $border-light;
+  margin-top: 8px;
+}
+
+.promo-text {
+  font-size: 12px;
+  color: $text-light;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+// Animations
+@keyframes slideDownMenu {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Responsive
+@media (max-width: 1024px) {
+  .header-top {
+    gap: 16px;
+  }
+
+  .search-container {
+    min-width: 200px;
+  }
+
+  .account-dropdown {
+    min-width: 260px;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-main {
+    padding: 10px 0;
+  }
+
+  .header-top {
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .header-left {
+    flex-basis: 100%;
+    gap: 12px;
+  }
+
+  .logo-link {
+    font-size: 24px;
+  }
+
+  .search-container {
+    flex: 1;
+    min-width: 150px;
+  }
+
+  .action-label {
+    display: none !important;
+  }
+
+  .action-link .icon {
+    font-size: 20px;
+  }
+
+  .account-dropdown {
+    min-width: 240px;
+    right: -60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-main {
+    padding: 8px 0;
+  }
+
+  .header-top {
+    gap: 8px;
+  }
+
+  .header-left {
+    gap: 8px;
+  }
+
+  .logo-link {
+    font-size: 20px;
+  }
+
+  .search-container {
+    min-width: 120px;
+  }
+
+  .search-field {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .search-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  .action-link .icon {
+    font-size: 18px;
+  }
+
+  .promo-section {
+    display: none;
+  }
+
+  .account-dropdown {
+    position: fixed;
+    top: auto;
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    min-width: auto;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 16px;
+}

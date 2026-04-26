@@ -1,7 +1,8 @@
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { registerLocaleData } from '@angular/common';
 import localeEnIn from '@angular/common/locales/en-IN';
 
@@ -12,8 +13,14 @@ import { CartComponent } from './pages/cart/cart.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { AppComponent } from './app.component';
 import { ShopComponent } from './pages/shop/shop.component';
-import { HttpClientModule } from '@angular/common/http';
-import { AdminProductDetailsComponent } from './pages/admin-product-details/admin-product-details.component';  // ✅ ADD THIS
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { AdminProductDetailsComponent } from './pages/admin-product-details/admin-product-details.component';
+import { LoginComponent } from './pages/login/login.component';
+import { SignupComponent } from './pages/signup/signup.component';
+import { AuthInterceptor } from './core/auth.interceptor';
+import { AppRoutingModule } from './app-routing.module';
+import { AddressFormModalComponent } from './pages/checkout/address-form-modal/address-form-modal.component';
+import { OrderConfirmationComponent } from './pages/checkout/order-confirmation/order-confirmation.component';
 
 @NgModule({
   declarations: [
@@ -24,22 +31,23 @@ import { AdminProductDetailsComponent } from './pages/admin-product-details/admi
     ProductDetailComponent,
     CartComponent,
     CheckoutComponent,
-    AdminProductDetailsComponent
+    AdminProductDetailsComponent,
+    LoginComponent,
+    SignupComponent,
+    AddressFormModalComponent,
+    OrderConfirmationComponent,
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
-    RouterModule.forRoot([
-      { path: '', component: ShopComponent },
-      { path: 'product/:id', component: ProductDetailComponent },
-      { path: 'cart', component: CartComponent },
-      { path: 'checkout', component: CheckoutComponent },
-      {path: 'admin/products', component: AdminProductDetailsComponent }
-    ])
+    ReactiveFormsModule,
+    AppRoutingModule
   ],
   providers: [
-    { provide: LOCALE_ID, useValue: 'en-IN' }
+    { provide: LOCALE_ID, useValue: 'en-IN' },
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

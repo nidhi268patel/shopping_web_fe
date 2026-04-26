@@ -1,84 +1,160 @@
 <!-- Header -->
-  <div class="header">
-    <div class="container">
-      <app-header></app-header>
-    </div>
-  </div>
+<div class="header">
+  <app-header></app-header>
+</div>
+
 <div class="cart-container">
   <!-- Main Cart Section -->
   <section class="cart-section">
     <div class="container">
       <div class="page-header">
-        <h1>🛒 Shopping Cart</h1>
-        <div class="cart-count">{{ items.length }} item{{ items.length !== 1 ? 's' : '' }}</div>
+        <div class="header-content">
+          <h1><i class="bi bi-bag-check me-3"></i>Shopping Cart</h1>
+          <p class="header-subtitle">Manage your items and proceed to checkout</p>
+        </div>
+        <div class="cart-count">
+          <i class="bi bi-bag-fill me-2"></i>{{ items.length }} item{{ items.length !== 1 ? 's' : '' }}
+        </div>
       </div>
 
       <!-- Empty Cart -->
-      <div *ngIf="!items.length" class="empty-cart">
-        <div class="empty-icon">🛒</div>
-        <h3>Your cart is empty</h3>
-        <p>Add some products to get started.</p>
+      <div *ngIf="!items.length" class="empty-cart-section">
+        <div class="empty-cart-card">
+          <div class="empty-icon">
+            <i class="bi bi-cart-x"></i>
+          </div>
+          <h3>Your cart is empty</h3>
+          <p>Looks like you haven't added any items yet.</p>
+          <button class="btn-continue-shopping" routerLink="/shop">
+            <i class="bi bi-shop me-2"></i>Continue Shopping
+          </button>
+        </div>
       </div>
 
       <!-- Cart Items (Using Existing Properties) -->
       <div *ngIf="items.length" class="cart-content">
         <div class="cart-items">
+          <div class="cart-items-header">
+            <span class="col-product">Product</span>
+            <span class="col-qty">Quantity</span>
+            <span class="col-price">Price</span>
+            <span class="col-total">Total</span>
+            <span class="col-action">Action</span>
+          </div>
+
           <div *ngFor="let it of items; trackBy: trackById" class="cart-item">
-            <div class="item-image">
-              <div class="placeholder-image">
-                <span>📦</span>
+            <div class="item-column product-col">
+              <div class="item-image">
+                <img [src]="it.imageBase64 || 'https://via.placeholder.com/300x200'" [alt]="it.name">
+              </div>
+              <div class="item-details">
+                <h3 class="product-name">{{ it.name | slice:0:40 }}</h3>
+                <!-- <p class="product-sku">SKU: #{{ it.id }}</p> -->
               </div>
             </div>
-            <div class="item-details">
-              <h3 class="product-name">{{ it.name }}</h3>
-              <div class="product-price">
-                <span class="price">{{ it.price | currency:'INR':'symbol':'1.0-0' }}</span>
-              </div>
-              <div class="quantity-info">
-                <span class="qty-label">Quantity:</span>
-                <span class="qty-value">{{ it.quantity }}</span>
-              </div>
+
+            <div class="item-column qty-col">
+                <input type="number" [(ngModel)]="it.quantity" (change)="updateQuantity(it)" min="1" [max]="it.stock"
+                  class="form-control form-control-sm qty-input">
             </div>
-            <div class="item-total">
-              <div class="total-price">
-                {{ (it.price * it.quantity) | currency:'INR':'symbol':'1.0-0' }}
-              </div>
+
+            <div class="item-column price-col">
+              <span class="price">{{ it.price | currency:'INR':'symbol':'1.0-0' }}</span>
             </div>
-            <div class="item-actions">
-              <button class="btn-remove" (click)="remove(it.id)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-                </svg>
-                Remove
+
+            <div class="item-column total-col">
+              <span class="item-total">{{ (it.price * it.quantity) | currency:'INR':'symbol':'1.0-0' }}</span>
+            </div>
+
+            <div class="item-column action-col">
+              <button class="btn-remove" (click)="remove(it.id)" title="Remove item">
+                <i class="bi bi-trash-fill"></i>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Order Summary -->
-        <div class="order-summary">
-          <div class="summary-card">
-            <h3>Price Details</h3>
-            <div class="summary-row">
-              <span>Total ({{ items.length }} item{{ items.length !== 1 ? 's' : '' }})</span>
-              <span>{{ total | currency:'INR':'symbol':'1.0-0' }}</span>
+        <!-- Cart Summary Section -->
+        <div class="cart-summary-section">
+          <!-- Benefits Cards -->
+          <div class="benefits-cards">
+            <div class="benefit-card">
+              <i class="bi bi-truck"></i>
+              <span>Free Delivery</span>
             </div>
-            <div class="summary-row free">
-              <span>Delivery Charges</span>
-              <span>FREE</span>
+            <div class="benefit-card">
+              <i class="bi bi-shield-check"></i>
+              <span>Secure Checkout</span>
             </div>
-            <hr>
-            <div class="total-row">
-              <span class="total-label">Total Amount</span>
-              <span class="grand-total">{{ total | currency:'INR':'symbol':'1.0-0' }}</span>
+            <div class="benefit-card">
+              <i class="bi bi-arrow-repeat"></i>
+              <span>Easy Returns</span>
             </div>
-            <button class="checkout-btn" routerLink="/checkout">
-              PROCEED TO CHECKOUT
-            </button>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="order-summary">
+            <div class="summary-card">
+              <h3>
+                <i class="bi bi-receipt me-2"></i>Price Breakdown
+              </h3>
+
+              <div class="summary-content">
+                <div class="summary-row">
+                  <span class="label">
+                    <i class="bi bi-bag me-2"></i>Subtotal ({{ items.length }} item{{ items.length !== 1 ? 's' : '' }})
+                  </span>
+                  <span class="value">{{  subtotal | currency:'INR':'symbol':'1.0-0' }}</span>
+                </div>
+
+                <div class="summary-row discount">
+                  <span class="label">
+                    <i class="bi bi-tag me-2"></i>Discount
+                  </span>
+                  <span class="value">-₹{{ discount | number:'1.0-0' }}</span>
+                </div>
+
+                <div class="summary-row delivery">
+                  <span class="label">
+                    <i class="bi bi-truck me-2"></i>Delivery Charges
+                  </span>
+                  <span class="value free">FREE</span>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="summary-row total">
+                  <span class="label total-label">
+                    <i class="bi bi-cash-coin me-2"></i>Total Amount
+                  </span>
+                  <span class="value grand-total">{{ total | currency:'INR':'symbol':'1.0-0' }}</span>
+                </div>
+
+                <div class="savings-info">
+                  <i class="bi bi-star-fill"></i>
+                  You save ₹ {{this.discount | number:'1.0-0'}} on this order
+                </div>
+              </div>
+
+              <!-- Promo Code -->
+              <!-- <div class="promo-section">
+                <input type="text" class="promo-input" placeholder="Enter promo code" disabled>
+                <button class="btn-apply-promo" disabled>Apply</button>
+              </div> -->
+
+              <!-- Checkout Button -->
+              <button class="checkout-btn" routerLink="/checkout">
+                <i class="bi bi-credit-card me-2"></i>PROCEED TO CHECKOUT
+              </button>
+
+              <!-- Continue Shopping Link -->
+              <button class="btn-continue" routerLink="/shop">
+                <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </section>
 </div>
-
