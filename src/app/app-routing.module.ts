@@ -4,15 +4,64 @@ import { ShopComponent } from './pages/shop/shop.component';
 import { CartComponent } from './pages/cart/cart.component';
 import { CheckoutComponent } from './pages/checkout/checkout.component';
 import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
-import { AdminProductDetailsComponent } from './pages/admin-product-details/admin-product-details.component';
+import { AdminProductDetailsComponent } from './pages/admin/admin-product-details/admin-product-details.component';
+import { AuthGuard } from './core/auth.guard';
+import { LoginComponent } from './pages/login/login.component';
+import { SignupComponent } from './pages/signup/signup.component';
+import { MyOrdersComponent } from './pages/my-orders/my-orders.component';
+import { AdminDashboardComponent } from './pages/admin/admin-dashboard/admin-dashboard.component';
 
 const routes: Routes = [
-  { path: '', component: ShopComponent },
-  { path: 'product/:id', component: ProductDetailComponent },
-  { path: 'cart', component: CartComponent },
-  { path: 'checkout', component: CheckoutComponent },
-  {path: 'admin/products', component: AdminProductDetailsComponent }
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+
+  { path: 'login', component: LoginComponent },
+  { path: 'signup', component: SignupComponent },
+
+  // 🛍 Public shop page (optional after login)
+  {
+    path: 'shop',
+    component: ShopComponent,
+    canActivate: [AuthGuard],   // attach your guard
+    data: { role: 'user' }
+  },
+   {
+    path: 'myorders',
+    component: MyOrdersComponent,
+    canActivate: [AuthGuard],   // attach your guard
+    data: { role: 'user' }
+  },
+  // 📦 Product details (with guard optional)
+  {
+    path: 'product/:id',
+    component: ProductDetailComponent
+    // canDeactivate: [YourGuard]  ❌ only if you created guard
+  },
+
+  // 🛒 Protected routes
+  { path: 'cart', component: CartComponent , canActivate: [AuthGuard],   // attach your guard
+    data: { role: 'user' }},
+  { path: 'checkout', component: CheckoutComponent, canActivate: [AuthGuard] },
+
+  // 🛠 Admin only
+  {
+    path: 'admin/products',
+    component: AdminProductDetailsComponent,
+    canActivate: [AuthGuard],
+    data: { role: 'ADMIN' }
+  },
+   {
+    path: 'admin/dashboard',
+    component: AdminDashboardComponent,
+    canActivate: [AuthGuard],
+    data: { role: 'ADMIN' }
+  },
+
+  // ❌ fallback route
+  { path: '**', redirectTo: 'login' }
 ];
 
-@NgModule({ imports: [RouterModule.forRoot(routes)], exports: [RouterModule] })
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
 export class AppRoutingModule { }

@@ -1,0 +1,50 @@
+<div class="admin-layout">
+  <!-- Left Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2><span class="logo-icon">🛍️</span> Shoply Admin</h2>
+    </div>
+    <ul class="nav-links">
+      <li [class.active]="activeTab === 'products'" (click)="switchTab('products')">
+        <span class="icon">📦</span> Products
+      </li>
+      <li [class.active]="activeTab === 'orders'" (click)="switchTab('orders')">
+        <span class="icon">🛒</span> Orders
+      </li>
+      <li [class.active]="activeTab === 'users'" (click)="switchTab('users')">
+        <span class="icon">👥</span> Users
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top header -->
+    <header class="top-header">
+      <h1>{{ activeTab | titlecase }} Management</h1>
+      <div class="user-profile">
+        <span class="greeting">Hello, {{ userDetails?.name || 'Admin' }}</span>
+        <div class="avatar">A</div>
+        <button *ngIf="isLoggedIn" class="btn btn-danger btn-sm logout-btn" (click)="logout()">Logout</button>
+      </div>
+    </header>
+
+    <div class="content-wrapper">
+      <!-- Products Tab -->
+      <div *ngIf="activeTab === 'products'" class="tab-pane fade-in">
+          <admin-product-details></admin-product-details>
+      </div>
+
+      <!-- Orders Tab -->
+      <div *ngIf="activeTab === 'orders'" class="tab-pane fade-in">
+        <admin-orders></admin-orders>
+      </div>
+
+      <!-- Users Tab -->
+      <div *ngIf="activeTab === 'users'" class="tab-pane fade-in">
+        <admin-user-management></admin-user-management>
+      </div>
+
+    </div>
+  </main>
+</div>

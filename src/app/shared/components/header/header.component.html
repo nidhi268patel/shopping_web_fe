@@ -1,29 +1,123 @@
+<!-- Header Container -->
+<header class="header-wrapper">
+  <!-- Main Header -->
+  <div class="header-main">
+    <div class="container">
+      <div class="header-top">
+        <!-- Left: Logo + Search -->
+        <div class="header-left">
+          <!-- Logo -->
+          <a routerLink="/shop" class="logo-link">Shoply<span class="logo-accent">.</span></a>
+          
+          <!-- Search Bar -->
+          <div class="search-container">
+            <div class="search-box">
+              <input 
+                type="text" 
+                class="search-field"
+                placeholder="Search for products, brands and more"
+                [(ngModel)]="query"
+                (input)="onQueryChange()"
+                aria-label="Search">
+              <button class="search-btn" type="button" title="Search">Search</button>
+            </div>
+          </div>
+        </div>
 
-<div class="top-strip small py-1">Great offers — Free delivery over {{50 | currency:'INR'}}</div>
+        <!-- Right: User Actions -->
+        <div class="header-right">
+          <!-- Account (Logged In) -->
+          <div class="nav-action account-action" *ngIf="isLoggedIn">
+            <button class="action-link account-menu-toggle" (click)="toggleAccountMenu()" title="Account">
+              <span class="icon">👤</span>
+              <div class="action-label">
+                <div class="label-top">Hello</div>
+                <div class="label-bottom">{{ userDetails?.name || 'User' }}</div>
+              </div>
+              <span class="dropdown-arrow" [class.open]="showAccountMenu">▼</span>
+            </button>
 
-<div class="container">
-  <div class="d-flex align-items-center justify-content-between header-inner">
+            <!-- Account Dropdown Menu -->
+            <div class="account-dropdown" *ngIf="showAccountMenu">
+              <div class="dropdown-header">
+                <div class="user-avatar">{{ (userDetails?.name || 'U')?.charAt(0).toUpperCase() }}</div>
+                <div class="user-info">
+                  <div class="user-name">{{ userDetails?.name }}</div>
+                  <div class="user-email">{{ userDetails?.email }}</div>
+                </div>
+              </div>
 
-    <!-- Left: Logo -->
-    <div class="d-flex align-items-center">
-      <a class="brand me-3" routerLink="/">Shoply<span class="logo-accent">.</span></a>
-    </div>
+              <div class="dropdown-divider"></div>
 
-    <!-- Center: Search -->
-    <div class="flex-fill mx-3">
-      <div class="input-group search-group">
-        <input class="form-control search-input" placeholder="Search for products, brands and more" aria-label="Search">
-        <button class="btn search-btn btn-primary" type="button">Search</button>
+              <div class="dropdown-items">
+                <a routerLink="/myorders" class="dropdown-item" (click)="closeAccountMenu(); $event.preventDefault()">
+                  <span class="item-icon">📋</span>
+                  <span class="item-text">My Orders</span>
+                </a>
+                <!-- <a href="#" class="dropdown-item" (click)="closeAccountMenu(); $event.preventDefault()">
+                  <span class="item-icon">❤️</span>
+                  <span class="item-text">Wishlist</span>
+                </a>
+                <a href="#" class="dropdown-item" (click)="closeAccountMenu(); $event.preventDefault()">
+                  <span class="item-icon">⚙️</span>
+                  <span class="item-text">Account Settings</span>
+                </a> -->
+                <a href="#" class="dropdown-item" (click)="closeAccountMenu(); $event.preventDefault()">
+                  <span class="item-icon">🔒</span>
+                  <span class="item-text">Change Password</span>
+                </a>
+              </div>
+
+              <div class="dropdown-divider"></div>
+
+              <button class="logout-btn" (click)="logout()">
+                <span class="logout-icon">🚪</span>
+                <span class="logout-text">Logout</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Account (Not Logged In) -->
+          <div class="nav-action" *ngIf="!isLoggedIn">
+            <button class="action-link login-btn" routerLink="/login" title="Sign In">
+              <span class="icon">👤</span>
+              <div class="action-label">
+                <div class="label-top">Hello</div>
+                <div class="label-bottom">Sign In</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Wishlist -->
+          <!-- <div class="nav-action">
+            <button class="action-link" title="Wishlist">
+              <span class="icon">❤️</span>
+              <div class="action-label">
+                <div class="label-top">Your</div>
+                <div class="label-bottom">Wishlist</div>
+              </div>
+            </button>
+          </div> -->
+
+          <!-- Cart -->
+          <div class="nav-action cart-action">
+            <button class="action-link cart-link" routerLink="/cart" title="Cart">
+              <span class="icon">🛒</span>
+              <div class="action-label">
+                <div class="label-top">Cart</div>
+                <div class="label-bottom" *ngIf="cartCount > 0">{{ cartCount }} items</div>
+                <div class="label-bottom" *ngIf="cartCount === 0">Empty</div>
+              </div>
+              <span class="badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Promo Banner -->
+      <div class="promo-section">
+        <span class="promo-text">✈️ Free shipping on orders over ₹999 | 🎁 Shop now, pay later with EMI</span>
       </div>
     </div>
-
-    <!-- Right: links -->
-    <div class="d-flex align-items-center gap-3">
-      <a class="link-muted" href="#">Login &nbsp; &nbsp;</a>
-      <a class="link-muted"  href="/">More &nbsp; &nbsp;</a>
-      <a class="cart-btn" routerLink="/cart">🛒Cart ({{ cartCount }}) &nbsp; &nbsp;</a>
-      <a class="link-muted" href="/checkout">Checkout</a>
-    </div>
-
   </div>
-</div>
+</header>

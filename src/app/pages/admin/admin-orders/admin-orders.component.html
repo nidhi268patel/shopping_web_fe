@@ -1,0 +1,94 @@
+<div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h3>Recent Orders</h3>
+            <div class="d-flex align-items-center gap-2">
+              <input type="text" placeholder="Search Order ID" class="form-control form-control-sm" [(ngModel)]="searchOrderId">
+              
+              <label for="fromDate" class="mb-0 text-nowrap">From:</label>
+              <input type="date" id="fromDate" class="form-control form-control-sm" [(ngModel)]="fromDate">
+              
+              <label for="toDate" class="mb-0 text-nowrap ms-2">To:</label>
+              <input type="date" id="toDate" class="form-control form-control-sm" [(ngModel)]="toDate">
+              
+              <button class="btn btn-primary btn-sm ms-2" (click)="filterOrders()">Filter</button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="resetFilters()">Reset</button>
+            </div>
+          </div>
+          <div class="card-body table-responsive" style="max-height: 70vh; overflow-y: auto;">
+            <table class="table main-table w-100">
+              <thead style="position: sticky; top: 0; background-color: #fff; z-index: 2; box-shadow: inset 0 -1px 0 #dee2e6;">
+                <tr>
+                  <th></th>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Date</th>
+                  <th>Total</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let order of orders">
+                  <tr class="order-row" [class.is-expanded]="order.isExpanded">
+                    <td class="expand-cell">
+                      <button class="btn-icon" (click)="toggleExpand(order)" title="Toggle items">
+                        <span class="chevron" [class.rotated]="order.isExpanded">▶</span>
+                      </button>
+                    </td>
+                    <td><strong>#{{ order.id }}</strong></td>
+                    <td>{{ order.customerName }}</td>
+                    <td>{{ order.date | date:'medium' }}</td>
+                    <td><strong>{{ order.total | currency:'INR' }}</strong></td>
+                    <td>
+                      <button class="btn btn-sm btn-outline" (click)="toggleExpand(order)">
+                        {{ order.isExpanded ? 'Hide Items' : 'View Items' }}
+                      </button>
+                    </td>
+                  </tr>
+                  
+                  <!-- Expandable Nested Items Table -->
+                  <tr *ngIf="order.isExpanded" class="expanded-row">
+                    <td colspan="6" class="p-0">
+                      <div class="expanded-content fade-in">
+                        <h4 class="nested-title">Items in {{ order.id }}</h4>
+                        <table class="table nested-table">
+                          <thead>
+                            <tr>
+                              <th>Item ID</th>
+                              <th>Product Name</th>
+                              <th>Qty</th>
+                              <th>Price</th>
+                              <th>Current Status</th>
+                              <th>Update Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of order.items">
+                              <td>#{{ item.id }}</td>
+                              <td>{{ item.name }}</td>
+                              <td>{{ item.quantity }}</td>
+                              <td>{{ item.price | currency:'INR' }}</td>
+                              <td>
+                                <span class="badge" [ngClass]="'badge-' + item.status.toLowerCase()">
+                                  {{ item.status }}
+                                </span>
+                              </td>
+                              <td class="action-cell">
+                                <select class="form-select status-select" [ngModel]="item.status" (ngModelChange)="updateItemStatus(item, $event)">
+                                  <option value="CONFIRMED" [disabled]="isStatusDisabled(item.status, 'CONFIRMED')">Confirmed</option>
+                                  <option value="PACKED" [disabled]="isStatusDisabled(item.status, 'PACKED')">Packed</option>
+                                  <option value="SHIPPED" [disabled]="isStatusDisabled(item.status, 'SHIPPED')">Shipped</option>
+                                  <option value="OUT_FOR_DELIVERY" [disabled]="isStatusDisabled(item.status, 'OUT_FOR_DELIVERY')">Out for Delivery</option>
+                                  <option value="DELIVERED" [disabled]="isStatusDisabled(item.status, 'DELIVERED')">Delivered</option>
+                                  <option value="CANCELLED" [disabled]="isStatusDisabled(item.status, 'CANCELLED')">Cancelled</option>
+                                </select>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>

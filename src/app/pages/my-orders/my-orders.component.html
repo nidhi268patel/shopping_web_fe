@@ -1,0 +1,86 @@
+<div class="header">
+  <app-header></app-header>
+</div>
+<div class="my-orders-container">
+  <div class="orders-header">
+    <h2 class="title">My Orders</h2>
+    <div class="search-bar">
+      <input type="text" placeholder="Search your orders here" [(ngModel)]="searchQuery" (ngModelChange)="filterOrders()">
+      <button class="search-btn" (click)="filterOrders()">
+        <span>Search Orders</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="orders-list">
+    <!-- //<ng-container *ngFor="let order of orders"> -->
+      <div class="order-card" *ngFor="let item of orders">
+      
+        <!-- Main Order summary line -->
+        <div class="order-main" (click)="toggleExpand(item)">
+          <div class="order-items-wrapper">
+            <div class="premium-item main-card-item">
+              <div class="premium-item-icon">
+                <img [src]="item.imageBase64" alt="Product Image" class="main-item-img">
+              </div>
+              <div class="premium-item-info">
+                <span class="premium-item-name">{{ item.productName }}</span>
+                <span class="premium-item-qty">Qty: {{ item.quantity }}</span>
+              </div>
+            </div>
+            <p class="product-seller order-id-text">Order #: {{ item?.orderId }} Item #: {{ item?.itemId }}</p>
+          </div>
+        
+          <div class="order-price">
+            <span class="total-label">Item Price</span>
+            <p>{{ item.price | currency:'INR' }}</p>
+          </div>
+        
+          <div class="order-status">
+            <div class="status-indicator">
+              <span class="dot" [ngClass]="item.status.toLowerCase()"></span>
+              <p class="status-text">{{ formatStatus(item?.status) }}</p>
+            </div>
+            <p class="sub-status" *ngIf="item?.status === 'DELIVERED'">Your item has been delivered</p>
+            <a href="javascript:void(0)" class="action-link" (click)="$event.stopPropagation()">★ Rate & Review Product</a>
+          </div>
+        </div>
+      
+        <!-- Expanded Details Section -->
+        <div class="order-expanded-details" *ngIf="item.isExpanded">
+          <div class="details-divider"></div>
+
+          <!-- Order Tracking Timeline -->
+          <div class="tracking-container" *ngIf="item.history">
+            <h4 class="tracking-title">Tracking History</h4>
+            <div class="tracking-timeline">
+              <div class="tracking-step" *ngFor="let step of item.history" [ngClass]="{'completed': step.status != 'CANCELLED','cancelled': step.status === 'CANCELLED'}">
+                <div class="step-node"></div>
+                <div class="step-info">
+                  <span class="step-status">{{ formatStatus(step?.status) }}</span>
+                  <!-- <span class="step-desc">{{ step.description }}</span> -->
+                  <span class="step-date">{{ step.timestamp | date:'MMM d, h:mm a' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="details-grid">
+            <div class="detail-box">
+              <h4>Shipping Address</h4>
+              <p>{{ item?.street }}, {{ item?.city }}, {{ item?.state }} - {{ item?.pincode }}</p>
+            </div>
+            <div class="detail-box">
+              <h4>Payment Method</h4>
+              <p>{{ item.paymentMethod }}</p>
+            </div>
+            <div class="detail-box actions-box">
+              <button class="cancel-btn" *ngIf="item?.status === 'PLACED' || item?.status === 'CONFIRMED' || item?.status === 'PACKED' || item?.status === 'SHIPPED'" (click)="cancelItem(item)">Cancel Item</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    <!-- </ng-container> -->
+  </div>
+</div>

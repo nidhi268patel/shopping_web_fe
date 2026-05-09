@@ -8,7 +8,7 @@ import { Product, ProductService } from '../../core/product.service';
   styleUrls: ['./product-detail.component.scss']
 })
 export class ProductDetailComponent implements OnInit {
-  product: Product=null;
+  product: Product|null=null;
   constructor(private route: ActivatedRoute, private ps: ProductService) {}
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('productId'));

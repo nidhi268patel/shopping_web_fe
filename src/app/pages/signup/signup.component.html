@@ -1,0 +1,59 @@
+<div class="signup-container">
+
+  <div class="signup-card">
+
+    <h2>Create Account</h2>
+    <p class="subtitle">Start shopping with us</p>
+
+    <form (ngSubmit)="signup()" #form="ngForm">
+
+      <!-- NAME -->
+      <div class="input-group">
+        <label>Name</label>
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="name"
+          placeholder="Enter full name"
+          required
+        />
+      </div>
+
+      <!-- EMAIL -->
+      <div class="input-group">
+        <label>Email</label>
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="email"
+          placeholder="Enter email"
+          required
+        />
+      </div>
+
+      <!-- PASSWORD -->
+      <div class="input-group">
+        <label>Password</label>
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="password"
+          placeholder="Create password"
+          required
+        />
+      </div>
+
+      <button type="submit" [disabled]="form.invalid">
+        Sign Up
+      </button>
+
+    </form>
+
+    <p class="login-link">
+      Already have an account?
+      <a routerLink="/">Login</a>
+    </p>
+
+  </div>
+
+</div>

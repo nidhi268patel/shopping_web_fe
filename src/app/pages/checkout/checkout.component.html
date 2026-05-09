@@ -1,11 +1,157 @@
 <div class="header">
-    <div class="container">
-        <app-header></app-header>
+  <app-header></app-header>
+</div>
+<div class="checkout-wrapper" *ngIf="!showConfirmation">
+  <!-- Header -->
+
+  <!-- Checkout Body -->
+  <div class="checkout-body">
+    <div class="container-fluid">
+      <div class="checkout-row">
+
+        <!-- Left Column -->
+        <div class="checkout-left">
+
+          <!-- Delivery Address -->
+          <div class="checkout-card" [class.expanded]="expandAddress">
+            <div class="section-header" (click)="expandAddress = !expandAddress">
+              <span class="step-number">1</span>
+              <h3>🚚 Delivery Address</h3>
+              <span class="toggle-icon">{{ expandAddress ? '−' : '+' }}</span>
+            </div>
+            <div class="section-content">
+              <div class="address-list">
+                <div *ngFor="let addr of addresses" class="address-card"
+                  [class.selected]="selectedAddress?.id === addr.id" (click)="selectAddress(addr)">
+
+                  <div class="address-content">
+                    <div class="address-radio">
+                      <input type="radio" [checked]="selectedAddress?.id === addr.id" name="address">
+                    </div>
+                    <div class="address-info">
+                      <div class="address-name">{{ addr.name }}</div>
+                      <div class="address-detail">{{ addr.street }}, {{ addr.city }}</div>
+                    </div>
+                    <div class="address-actions">
+                      <button class="btn-link" (click)="openAddressModal(addr); $event.stopPropagation()">
+                        <i class="bi bi-pencil"></i></button>&nbsp;
+                      <button class="btn-link" (click)="deleteAddress(addr.id); $event.stopPropagation()">
+                        <i class="bi bi-trash-fill text-danger"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <button class="btn-add-address" (click)="openAddressModal()">
+                <span class="plus-icon">+</span> Add a new address
+              </button>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="checkout-card" [class.expanded]="expandSummary">
+            <div class="section-header" (click)="expandSummary = !expandSummary">
+              <span class="step-number">2</span>
+              <h3>🛒 Order Summary</h3>
+              <span class="toggle-icon">{{ expandSummary ? '−' : '+' }}</span>
+            </div>
+            <div class="section-content">
+              <div class="items-list">
+                <div *ngFor="let item of cartItems" class="order-item">
+                  <div class="item-image">
+                    <img [src]="item.imageBase64 || 'https://via.placeholder.com/300x200'" [alt]="item.name">
+                  </div>
+                  <div class="item-details">
+                    <div class="item-name">{{ item.name }}</div>
+                    <div class="item-price">
+                      <span class="price">₹{{ item.price | number:'1.0-0' }}</span>
+                      <span class="quantity">Qty: {{ item.quantity }}</span>
+                    </div>
+                  </div>
+                  <div class="item-total">₹{{ (item.price * item.quantity) | number:'1.0-0' }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="checkout-card" [class.expanded]="expandPayment">
+            <div class="section-header" (click)="expandPayment = !expandPayment">
+              <span class="step-number">3</span>
+              <h3>💳 Payment Method</h3>
+              <span class="toggle-icon">{{ expandPayment ? '−' : '+' }}</span>
+            </div>
+            <div class="section-content">
+              <div class="payment-options">
+                <label class="payment-option" *ngFor="let method of paymentMethods">
+                  <input type="radio" [(ngModel)]="paymentMethod" [value]="method.value" name="payment">
+                  <span class="payment-label">
+                    <span class="icon">{{ method.icon }}</span>
+                    <span class="text">{{ method.label }}</span>
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="checkout-right">
+          <div class="checkout-card price-summary-card">
+            <div class="section-header">
+              <h3>💰 Price Details</h3>
+            </div>
+            <!-- <div class="section-content"> -->
+            <div class="price-row">
+              <span class="price-label">Subtotal</span>
+              <span class="price-value">₹{{ subtotal | number:'1.0-0' }}</span>
+            </div>
+            <div class="price-row" *ngIf="discount > 0">
+              <span class="price-label discount-label">Discount</span>
+              <span class="price-value discount-value">-₹{{ discount | number:'1.0-0' }}</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">GST (5%)</span>
+              <span class="price-value">₹{{ gst | number:'1.0-0' }}</span>
+            </div>
+            <div class="price-row">
+              <span class="price-label">Shipping</span>
+              <span class="price-value" [class.free]="shippingCost === 0">
+                <span *ngIf="shippingCost === 0">FREE</span>
+                <span *ngIf="shippingCost > 0">₹{{ shippingCost | number:'1.0-0' }}</span>
+              </span>
+            </div>
+            <div class="divider"></div>
+            <div class="price-row total-row">
+              <span class="total-label">Total Amount</span>
+              <span class="total-value">₹{{ totalAmount | number:'1.0-0' }}</span>
+            </div>
+            <button class="btn-place-order" (click)="placeOrder()"
+              [disabled]="!selectedAddress || cartItems.length === 0">
+              Place Order
+            </button>
+            <div class="order-guarantee">
+              <span class="guarantee-icon">✓</span>
+              <span>Safe & Secure Transactions</span>
+            </div>
+            <!-- </div> -->
+          </div>
+        </div>
+
+
+      </div>
     </div>
+  </div>
 </div>
-<h2>Checkout</h2>
-<div *ngIf="items.length; else empty">
-  <p>Total: {{ total | currency:'INR':'symbol':'1.0-0' }}</p>
-  <p>Place order (demo): <button class="btn btn-primary" (click)="place()">Place Order</button></p>
-</div>
-<ng-template #empty><p>Your cart is empty.</p></ng-template>
+
+<!-- Order Confirmation Modal -->
+<app-order-confirmation *ngIf="showConfirmation" [orderId]="orderId" [deliveryAddress]="selectedAddress"
+  [orderItems]="cartItems" [subtotal]="subtotal" [discount]="discount" [gst]="gst" [shippingCost]="shippingCost"
+  [totalAmount]="totalAmount" [paymentMethod]="paymentMethod" (continueShopping)="resetCheckout()"
+  (viewOrder)="viewOrderDetails()">
+</app-order-confirmation>
+
+<!-- Address Form Modal -->
+<app-address-form-modal *ngIf="showAddressModal" [address]="editingAddress" (save)="saveAddress($event)"
+  (close)="closeAddressModal()">
+</app-address-form-modal>

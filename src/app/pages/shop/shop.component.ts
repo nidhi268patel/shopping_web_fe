@@ -3,19 +3,37 @@ import { CartService } from 'src/app/core/cart.service';
 import { ProductService, Product } from 'src/app/core/product.service';
 import { SearchService } from 'src/app/core/search.service';
 import { Subscription } from 'rxjs';
+import { categories } from 'src/app/core/constant';
 
 @Component({
   selector: 'app-shop',
   templateUrl: './shop.component.html',
-  styleUrls: ['./shop.component.css']
+  styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent implements OnInit, OnDestroy {
   products: Product[] = [];
   filtered: Product[] = [];
   primeOnly = false;
   searchQuery = '';
-  selectedCategory = '';  // New property
- sliderTabs = [
+  
+  // Filter properties
+  selectedCategories: string[] = [];
+  //readonly categories:string[] = categories
+  
+  categories: string[] = categories
+  
+  sortBy = 'relevant';
+  priceRange = { min: 0, max: 100000 };
+  minPriceInput = 0;
+  maxPriceInput = 100000;
+  showFilters = true;
+  
+  // Discount filter properties
+  discount20 = false;
+  discount40 = false;
+  discount60 = false;
+
+  sliderTabs = [
     { name: 'Top Deals Under ₹999', filter: 'price', value: 999 },
     { name: 'Best of Mobiles', filter: 'category', value: 'Mobile' },
     { name: 'Fashion Trending Now', filter: 'category', value: 'Fashion' },
@@ -27,21 +45,54 @@ export class ShopComponent implements OnInit, OnDestroy {
   constructor(private ps: ProductService, private cart: CartService, private search: SearchService) {}
 
   ngOnInit(): void {
-        this.startAutoPlay();
-   this.loadProducts();
-    
-
+    this.startAutoPlay();
+    this.loadProducts();
   }
- async loadProducts() {
+
+  async loadProducts() {
     this.products = await this.ps.getAll().toPromise() as Product[];
+   // this.extractCategories();
+    this.setMaxPrice();
+    
     this.searchSub = this.search.observe().subscribe(q => {
       this.searchQuery = (q || '').toLowerCase().trim();
       this.applyFilters();
     });
     this.applyFilters();
-
-    console.log(this.products);
   }
+
+  extractCategories() {
+    const uniqueCategories = new Set<string>();
+    this.products.forEach(p => {
+      if (p.productCategory) {
+        uniqueCategories.add(p.productCategory);
+      }
+    });
+    this.categories = Array.from(uniqueCategories).sort();
+  }
+
+  setMaxPrice() {
+    if (this.products.length > 0) {
+      const maxPrice = Math.max(...this.products.map(p => p.sellingPrice || 0));
+      this.priceRange.max = Math.ceil(maxPrice / 1000) * 1000;
+      this.maxPriceInput = this.priceRange.max;
+    }
+  }
+
+  toggleCategory(category: string) {
+    const index = this.selectedCategories.indexOf(category);
+    if (index > -1) {
+      this.selectedCategories.splice(index, 1);
+    } else {
+      this.selectedCategories.push(category);
+    }
+    this.applyFilters();
+  }
+
+  isCategorySelected(category: string): boolean {
+    return this.selectedCategories.includes(category);
+  }
+
   applyFilters() {
     let filtered = [...this.products];
     
@@ -54,15 +105,71 @@ export class ShopComponent implements OnInit, OnDestroy {
       });
     }
     
-    // New category filter
-    if (this.selectedCategory) {
-      filtered = filtered.filter(p => p.productCategory === this.selectedCategory);
+    // Category filter
+    if (this.selectedCategories.length > 0) {
+      filtered = filtered.filter(p => 
+        this.selectedCategories.includes(p.productCategory)
+      );
     }
+    
+    // Price range filter
+    filtered = filtered.filter(p => 
+      p.sellingPrice >= this.minPriceInput && p.sellingPrice <= this.maxPriceInput
+    );
+    
+    // Discount filter
+    const activeDiscounts = [];
+    if (this.discount20) activeDiscounts.push(20);
+    if (this.discount40) activeDiscounts.push(40);
+    if (this.discount60) activeDiscounts.push(60);
+    
+    if (activeDiscounts.length > 0) {
+      filtered = filtered.filter(p => {
+        const discount = p.discountPercent || 0;
+        return activeDiscounts.some(d => discount >= d);
+      });
+    }
+    
+    // Sorting
+    filtered = this.sortProducts(filtered);
     
     this.filtered = filtered;
   }
 
-  addToCart(p: Product) { this.cart.addToCart({ id: p.productId, name: p.productName, price: p.mrpPrice, quantity: 1 }); }
+  sortProducts(products: Product[]): Product[] {
+    const sorted = [...products];
+    switch (this.sortBy) {
+      case 'price-low':
+        return sorted.sort((a, b) => (a.sellingPrice || 0) - (b.sellingPrice || 0));
+      case 'price-high':
+        return sorted.sort((a, b) => (b.sellingPrice || 0) - (a.sellingPrice || 0));
+      case 'discount':
+        return sorted.sort((a, b) => (b.discountPercent || 0) - (a.discountPercent || 0));
+      case 'newest':
+        return sorted.sort((a, b) => (b.productId || 0) - (a.productId || 0));
+      default:
+        return sorted;
+    }
+  }
+
+  clearFilters() {
+    this.selectedCategories = [];
+    this.minPriceInput = this.priceRange.min;
+    this.maxPriceInput = this.priceRange.max;
+    this.discount20 = false;
+    this.discount40 = false;
+    this.discount60 = false;
+    this.sortBy = 'relevant';
+    this.applyFilters();
+  }
+
+  updatePriceFilter() {
+    this.applyFilters();
+  }
+
+  addToCart(p: Product) { 
+    this.cart.addToCart({ id: p.productId, name: p.productName, price: p.sellingPrice,mrpPrice: p.mrpPrice, quantity: 1,imageBase64: p.imageBase64, stock: p.availableStock }); 
+  }
 
   setImagePlaceholder(ev: Event) {
     const img = ev.target as HTMLImageElement;
@@ -93,10 +200,10 @@ export class ShopComponent implements OnInit, OnDestroy {
   }
 
    carouselSlides = [
-     { name: 'Top Deals Under ₹999', filter: 'price', value: 999,image: '/assets/images/under999.jpg' },
-    { name: 'Best of Mobiles', filter: 'category', value: 'Mobile',image: '/assets/images/mobiledeal.jpg'  },
+     { name: 'Top Deals Under ₹999', filter: 'price', value: 999, },
+    { name: 'Best of Mobiles', filter: 'category', value: 'Mobile' },
    // { name: 'Fashion Trending Now', filter: 'category', value: 'Fashion' },
-    { name: 'Today\'s Offers', filter: 'discount', value: 20,image: '/assets/images/todaysoffer.jpg'  },
+    { name: 'Today\'s Offers', filter: 'discount', value: 20 },
 
   ];
 
@@ -132,6 +239,14 @@ export class ShopComponent implements OnInit, OnDestroy {
 
   onLeave() {
     this.startAutoPlay();
+  }
+  navigateToCart() {
+    window.location.href = '/cart';
+  }
+
+  checkInCarPresent(p: Product): boolean {
+    const cartItems = this.cart.getCartItems();   
+    return cartItems.some(item => item.id === p.productId);
   }
   ngOnDestroy(): void {
         this.stopAutoPlay();

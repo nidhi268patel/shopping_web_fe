@@ -144,3 +144,19 @@
   .prev { left: 1.5rem; }
   .next { right: 1.5rem; }
 }
+
+.category-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.category-item {
+  padding: 0.75rem 0;
+  cursor: pointer;
+}
+
+/* .form-check-input {
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+} */
