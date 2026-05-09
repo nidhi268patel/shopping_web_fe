@@ -95,19 +95,11 @@ export class CheckoutComponent implements OnInit {
   closeAddressModal() {
     this.showAddressModal = false;
     this.editingAddress = null;
+    this.loadAddresses();
   }
 
   saveAddress(address: Address) {
-    if (address.id && this.addresses.find(a => a.id === address.id)) {
-      const index = this.addresses.findIndex(a => a.id === address.id);
-      this.addresses[index] = address;
-    } else {
-      address.id = Date.now();
-      this.addresses.push(address);
-    }
-
-    // Save to localStorage
-    localStorage.setItem('addresses', JSON.stringify(this.addresses));
+    
     this.closeAddressModal();
   }
 

@@ -12,7 +12,6 @@ import { UserService } from 'src/app/core/user.service';
 })
 export class AddressFormModalComponent implements OnInit {
     @Input() address: Address | null = null;
-    @Output() save = new EventEmitter<Address>();
     @Output() close = new EventEmitter<void>();
 
     addressForm!: FormGroup;
@@ -58,7 +57,7 @@ export class AddressFormModalComponent implements OnInit {
 
 
             this.addressService.addAddress(addressData).subscribe(savedAddress => {
-                this.save.emit(savedAddress);
+              this.closeModal();
             }, error => {
                 console.error('Error saving address:', error);
             });
