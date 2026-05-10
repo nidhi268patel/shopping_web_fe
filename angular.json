@@ -6,39 +6,70 @@
       "projectType": "application",
       "root": "",
       "sourceRoot": "src",
+
       "architect": {
+
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
+
           "options": {
             "outputPath": "dist/shopping-angular",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
+
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/bootstrap-icons/font/bootstrap-icons.css",
               "src/styles.scss"
             ],
+
             "scripts": [
               "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
             ]
-          }
+          },
+
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true
+            }
+          },
+
+          "defaultConfiguration": "production"
         },
+
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+
           "options": {
             "browserTarget": "shopping-angular:build"
+          },
+
+          "configurations": {
+            "production": {
+              "browserTarget": "shopping-angular:build:production"
+            }
           }
         }
+
       }
     }
   },
+
   "defaultProject": "shopping-angular",
+
   "cli": {
     "analytics": false
   }
