@@ -4,6 +4,7 @@ import { ProductService, Product } from 'src/app/core/product.service';
 import { SearchService } from 'src/app/core/search.service';
 import { Subscription } from 'rxjs';
 import { categories } from 'src/app/core/constant';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-shop',
@@ -42,7 +43,7 @@ export class ShopComponent implements OnInit, OnDestroy {
   ];
   private searchSub?: Subscription;
 
-  constructor(private ps: ProductService, private cart: CartService, private search: SearchService) {}
+  constructor(private ps: ProductService, private cart: CartService, private search: SearchService,private router: Router) {}
 
   ngOnInit(): void {
     this.startAutoPlay();
@@ -241,7 +242,7 @@ export class ShopComponent implements OnInit, OnDestroy {
     this.startAutoPlay();
   }
   navigateToCart() {
-    window.location.href = '/cart';
+    this.router.navigate(['/cart']);
   }
 
   checkInCarPresent(p: Product): boolean {
