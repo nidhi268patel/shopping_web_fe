@@ -50,10 +50,17 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ]
+            },
+            "development": {
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true
             }
           },
-
-          "defaultConfiguration": "production"
+          "defaultConfiguration": "development"
         },
 
         "serve": {
@@ -66,8 +73,12 @@
           "configurations": {
             "production": {
               "browserTarget": "shopping-angular:build:production"
+            },
+            "development": {
+              "browserTarget": "shopping-angular:build:development"
             }
-          }
+          },
+          "defaultConfiguration": "development"
         }
 
       }

@@ -15,7 +15,7 @@ export class UserService {
 
   // 🟢 Signup
   signup(data: any) {
-    return this.http.post(`${this.baseUrl}/signup`, data);
+    return this.http.post(`${this.baseUrl}/signup`, data, { responseType: 'text' });
   }
 
   // 🔵 Login

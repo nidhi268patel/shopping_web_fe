@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { categories } from 'src/app/core/constant';
-import { Product } from 'src/app/core/product.service';
+import { Product, ProductService } from 'src/app/core/product.service';
 
 
 @Component({
@@ -34,10 +34,9 @@ readonly categories:string[] = categories
     productCategory: ''
   };
 
-  private apiUrl = 'http://localhost:8080/api/products';
   defaultImage = 'https://via.placeholder.com/50x50/f8f9fa/6c757d?text=?';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private productService:ProductService) {}
 
   ngOnInit() {
     console.log('AdminProductDetailsComponent initialized');
@@ -47,7 +46,7 @@ readonly categories:string[] = categories
   async loadProducts() {
     this.loading = true;
     try {
-      const response: any[] = await this.http.get<any[]>(this.apiUrl).toPromise() || [];
+      const response: any[] = await this.productService.getAll().toPromise() || [];
       this.products = response.map(p => ({
         ...p,
         imageBase64: p.imageBase64 || this.defaultImage
@@ -96,10 +95,10 @@ readonly categories:string[] = categories
     }
     try {
       if (this.showAddModal) {
-        await this.http.post(this.apiUrl, this.formData).toPromise();
+        await this.productService.create(this.formData).toPromise();
         alert('✅ Product created!');
       } else if (this.showEditModal) {
-        await this.http.put(`${this.apiUrl}/${this.formData.productId}`, this.formData).toPromise();
+        await this.productService.update(this.formData.productId, this.formData).toPromise();
         alert('✅ Product updated!');
       }
       this.closeModals();
@@ -118,7 +117,7 @@ readonly categories:string[] = categories
   async deleteProduct(id: number) {
     if (confirm('Delete this product?')) {
       try {
-        await this.http.delete(`${this.apiUrl}/${id}`).toPromise();
+        await this.productService.delete(id).toPromise();
         this.loadProducts();
         alert('🗑️ Product deleted!');
       } catch (error) {
@@ -185,4 +184,3 @@ clearImage() {
   }
 
 }
-

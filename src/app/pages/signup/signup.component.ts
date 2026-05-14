@@ -28,22 +28,20 @@ export class SignupComponent implements OnInit {
       password: this.password
     };
 
-    this.auth.signup(data).subscribe({
-      next: (res: any) => {
+    this.auth.signup(data).subscribe((res: any) => {
         console.log('Signup Success:', res);
 
         alert('Signup successful 🎉');
 
         // redirect to login
         this.router.navigate(['/login']);
-      },
+      },(err) => {
 
-      error: (err) => {
-        console.error('Signup Error:', err);
-
-        alert('Signup failed ❌ Please try again');
+        const errorMessage =  JSON.parse(err.error);
+        alert(errorMessage.message || 'Signup failed. Please try again.');
       }
-    });
+    );
   }
+
 
 }
