@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Product {
   productId: number;                // Long → number in TS
@@ -19,7 +20,7 @@ export interface Product {
 @Injectable({ providedIn: 'root' })
 export class ProductService {
  
-   private apiUrl = 'http://localhost:8080/api/products';
+   private apiUrl = `${environment.apiUrl}/api/products`;
 
   constructor(private http: HttpClient) {}
 

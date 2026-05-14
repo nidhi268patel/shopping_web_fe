@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from './constant';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
 
-  private baseUrl = 'http://localhost:8080/api/user';
+  private baseUrl = `${environment.apiUrl}/api/user`;
 
   constructor(private http: HttpClient) { }
 
@@ -24,7 +25,7 @@ export class UserService {
       .set('email', email)
       .set('password', password);
 
-    return this.http.get('http://localhost:8080/api/user/login', { params });
+    return this.http.get(`${this.baseUrl}/login`, { params });
   }
   logout() {
     localStorage.removeItem('token');
